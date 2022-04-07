@@ -14,11 +14,11 @@ CURRENTDIR=$(pwd)
 ############################################################
 Help()
 {
-echo -e "${GEEEN}  _______ ____             __  "
-echo -e " /_  __(_) __ \____  _____/ /__"
-echo -e "  / / / / / / / __ \/ ___/ //_/"
-echo -e " / / / / /_/ / /_/ / /__/ ,<   "
-echo -e "/_/ /_/_____/\____/\___/_/|_|${ENDCOLOR}"
+   echo -e "${GREEN}  _______ ____             __  ${ENDCOLOR}"
+   echo -e "${GREEN} /_  __(_) __ \____  _____/ /__${ENDCOLOR}"
+   echo -e "${GREEN}  / / / / / / / __ \/ ___/ //_/${ENDCOLOR}"
+   echo -e "${GREEN} / / / / /_/ / /_/ / /__/ ,<   ${ENDCOLOR}"
+   echo -e "${GREEN}/_/ /_/_____/\____/\___/_/|_|  ${ENDCOLOR}"
    echo
    echo "TiDock is a simple management script to manage a docker based"
    echo "development environment"
