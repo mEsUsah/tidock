@@ -1,0 +1,177 @@
+#!/bin/bash
+
+RED="\e[31m"
+GREEN="\e[32m"
+ENDCOLOR="\e[0m"
+PROJECTNAME=$(basename "${PWD,,}")
+PROJECTNAME=${PROJECTNAME//./}
+DBDIR="${HOME}/.tidock/dbvolumes/${PROJECTNAME}"
+VHOSTDIR="${HOME}/.tidock/hostsvolumes/${PROJECTNAME}"
+CURRENTDIR=$(pwd)
+
+############################################################
+# Help                                                     #
+############################################################
+Help()
+{
+echo -e "${GEEEN}  _______ ____             __  "
+echo -e " /_  __(_) __ \____  _____/ /__"
+echo -e "  / / / / / / / __ \/ ___/ //_/"
+echo -e " / / / / /_/ / /_/ / /__/ ,<   "
+echo -e "/_/ /_/_____/\____/\___/_/|_|${ENDCOLOR}"
+   echo
+   echo "TiDock is a simple management script to manage a docker based"
+   echo "development environment"
+   echo "Made by Stanley Skarshaug - www.haxor.no"
+   echo
+   echo "Syntax: tidock [help|build|create|destroy|start|stop|status|seed]"
+   echo
+   echo "Build/Destroy:"
+   echo "....................................................."
+   echo "build     Build Docker image based on Dockerfile"
+   echo "create    Create Docker container with docker-compose"
+   echo "destroy   Destroy containers and persistent database"
+   echo "rebuild   Destroy and rebuild containers"
+   echo
+   echo "Start/Stop:"
+   echo "....................................................."
+   echo "start     Start containers"
+   echo "stop      Stop containers"
+   echo "status    Docker status"
+   echo
+   echo "Testing of functionality:"
+   echo "....................................................."
+   echo "seed      Create a test db with test data"
+   echo
+   echo
+   echo "Example use: $ tidock status"
+   echo "....................................................."
+}
+
+############################################################
+# Build                                                  #
+############################################################
+Build()
+{
+    echo -e "${GREEN}TIDOCK - Build TIDOCK image from Dockerfile${ENDCOLOR}"
+    docker build -t ${PROJECTNAME} .
+}
+
+############################################################
+# Create                                                  #
+############################################################
+Create()
+{
+    echo -e "${GREEN}TIDOCK - create directory for DB volume ${ENDCOLOR}"
+    echo "...creating directory: ${DBDIR}"
+    mkdir -p $DBDIR
+    
+    echo -e "${GREEN}TIDOCK - Create TIDOCK Containers${ENDCOLOR}"
+    docker-compose up --no-start
+}
+
+############################################################
+# Destroy                                                  #
+############################################################
+Destroy()
+{
+    Stop
+    echo -e "${RED}TIDOCK - Destroy TIDOCK Containers${ENDCOLOR}"
+    docker-compose rm
+    echo -e "${RED}TIDOCK - Destroy persistent database${ENDCOLOR}"
+    sudo rm -rf $DBDIR/*
+}
+
+############################################################
+# Rebuild                                                    #
+############################################################
+Rebuild()
+{
+    echo -e "${RED}TIDOCK - Stop and Rebuild TIDOCK Containers${ENDCOLOR}"
+    Stop
+    Destroy
+    Create
+}
+
+############################################################
+# Start                                                    #
+############################################################
+Start()
+{
+    echo -e "${GREEN}TIDOCK - Starting TIDOCK Containers${ENDCOLOR}"
+    docker-compose start
+    docker exec -i ${PROJECTNAME}_web_1 php-fpm -D
+}
+
+############################################################
+# Stop                                                     #
+############################################################
+Stop()
+{
+    echo -e "${RED}TIDOCK - Stopping running TIDOCK Containers${ENDCOLOR}"
+    docker-compose stop
+}
+
+############################################################
+# Status                                                   #
+############################################################
+Status()
+{
+    echo -e "${GREEN}TIDOCK - Status on running Docker Containers (docker ps)${ENDCOLOR}"
+    docker ps
+}
+
+############################################################
+# seed-test                                                #
+############################################################
+Seed()
+{
+    echo -e "${GREEN}TIDOCK - Create test DB and enter test data ${ENDCOLOR}"
+    echo -e "${GREEN}TIDOCK - NB: This might fail because DB is not yet running ${ENDCOLOR}"
+    TIDOCKDIR=/opt/tidock
+    cp ${TIDOCKDIR}/test.d/index.php .
+    docker exec -i ${PROJECTNAME}_db_1 mysql -uroot -proot < ${TIDOCKDIR}/test.d/dbseed.sql
+}
+
+if [ ! -f "Dockerfile" ]; then
+	echo -e "${RED}TIDOCK - Exiting, no Dockerfile found${ENDCOLOR}"
+	exit 0
+fi
+
+if [ ! -f "docker-compose.yaml" ]; then
+	echo -e "${RED}TiDock - Exiting, no docker-compose.yaml found${ENDCOLOR}"
+	exit 0
+fi
+
+case $1 in
+    help)
+        Help
+        exit;;
+    build)
+        Build
+        exit;;
+    create)
+        Create
+        exit;;
+    destroy)
+        Destroy
+        exit;;
+    rebuild)
+        Rebuild
+        exit;;
+    seed)
+        Seed
+        exit;;
+    start)
+        Start
+        exit;;
+    status)
+        Status
+        exit;;
+    stop)
+        Stop
+        exit;;
+    *) # Invalid option - print help
+        Help
+        exit;;
+esac
