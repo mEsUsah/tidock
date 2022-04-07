@@ -15,7 +15,7 @@ sudo apt install docker docker-compose git
 ## Installation ##
 Download and install tibox by running:
 ```bash
-cd ~/opt
+cd /opt
 git clone git@github.com:mEsUsah/tidock.git
 ln -s /opt/tidock/tidock /bin/
 ```
