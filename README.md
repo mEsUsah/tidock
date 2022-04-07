@@ -1,9 +1,9 @@
-# Docker based CentOS web development environment #
-A simple git repo to play around with dockerfiles and docker compose to automate the process of creating development environments.
+# TiDock - web development environment #
+A simple script to manage docker based web development environments
 
 # Setup / Installation #
 ## Dependencies ##
-TIDOCK depends on:
+TiDock depends on:
 * docker
 * docker-compose
 * git
@@ -13,14 +13,14 @@ sudo apt install docker docker-compose git
 ```
 
 ## Installation ##
-Download and install tibox by running:
+Download and install TiDock by running:
 ```bash
 cd /opt
 git clone git@github.com:mEsUsah/tidock.git
 ln -s /opt/tidock/tidock /bin/
 ```
 
-# Using TIDOCK #
+# Using TiDock #
 ## Build image ##
 ```bash
 tidock build
