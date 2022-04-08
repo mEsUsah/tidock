@@ -16,7 +16,10 @@ sudo apt install docker docker-compose git
 Download and install TiDock by running:
 ```bash
 cd /opt
-git clone git@github.com:mEsUsah/tidock.git
+sudo mkdir tidock
+sudo chmod $USER:$USER tidock
+cd tidock
+git clone git@github.com:mEsUsah/tidock.git .
 ln -s /opt/tidock/tidock /bin/
 ```
 
